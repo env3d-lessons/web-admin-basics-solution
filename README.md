@@ -14,7 +14,7 @@ Launch your own Linux instance with Apache HTTP server on AWS
 
 1. Follow this video to setup your aws account: https://youtu.be/puu_G8ANeTM 
 
-Note: if you are using PuTTY to connect to your ec2 instance, please follow these instructions: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
+   Note: if you are using PuTTY to connect to your ec2 instance, please follow these instructions: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
 
 2. Follow this video to get a quick introduction on installing and using apache2 web server: https://youtu.be/KyN0DTeSE8A.  Notes:
    - We will be using Ubuntu Server 22.04, which is a very popular linux distribution. 
@@ -56,6 +56,10 @@ Note: if you are using PuTTY to connect to your ec2 instance, please follow thes
 
 6. Run `pytest` at the top level of your assignment repo, this will copy all the relevant files to assignment repo
    and check them for errors.
+
+   - NOTE: running pytest will create a file called my_ip.txt in your assignment repo.  This file contained your
+   sever's ip address using auto detection.  If your server ip has changed, you will need to delete this file so
+   pytest will re-create it.
 
 7. When you are satisified, run the following commands to submit:
    - `git add -A`

@@ -49,11 +49,15 @@ Note: if you are using PuTTY to connect to your ec2 instance, please follow thes
 `/usr/lib/cgi-bin/` directory.
 
 2. Clone this assignment repository under your home directory (i.e. `/home/ubuntu/`)
+   
+4. Install the following python packages so pytest can run:
+   - `sudo apt install -y python3-pip python-is-python3; pip install pytest`
+   - Exit and relogin
 
-3. Run `pytest` at the top level of your assignment repo, this will copy all the relevant files to assignment repo
+6. Run `pytest` at the top level of your assignment repo, this will copy all the relevant files to assignment repo
    and check them for errors.
 
-4. When you are satisified, run the following commands to submit:
+7. When you are satisified, run the following commands to submit:
    - `git add -A`
    - `git commit -a -m 'submit'`
    - `git push` 

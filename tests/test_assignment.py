@@ -1,5 +1,6 @@
 import os
 import stat
+import re
 import json
 import pathlib
 import pytest
@@ -36,6 +37,7 @@ def test_cgi_script_setup():
     with open('/usr/lib/cgi-bin/test.sh') as test_sh:
         content = test_sh.read()
         assert '#!/bin/bash' in content
+        assert re.search(r'content-type:.*',content, re.IGNORECASE)
 
 def test_cgi_script_permission():
 

@@ -1,4 +1,5 @@
 import os
+import stat
 import json
 import pathlib
 import pytest
@@ -29,6 +30,36 @@ def test_apache_static(my_ip):
 
     if err:
         assert False, f"An error occurred: {err}"
+
+
+def test_cgi_script_setup():
+    with open('/usr/lib/cgi-bin/test.sh') as test_sh:
+        content = test_sh.read()
+        assert '#!/bin/bash' in content
+
+def test_cgi_script_permission():
+
+    file_stat = os.stat('/usr/lib/cgi-bin/test.sh')
+
+    # Owner permissions
+    owner_read = bool(file_stat.st_mode & stat.S_IRUSR)
+    owner_write = bool(file_stat.st_mode & stat.S_IWUSR)
+    owner_execute = bool(file_stat.st_mode & stat.S_IXUSR)
+    
+    # Group permissions
+    group_read = bool(file_stat.st_mode & stat.S_IRGRP)
+    group_write = bool(file_stat.st_mode & stat.S_IWGRP)
+    group_execute = bool(file_stat.st_mode & stat.S_IXGRP)
+    
+    # Others permissions
+    others_read = bool(file_stat.st_mode & stat.S_IROTH)
+    others_write = bool(file_stat.st_mode & stat.S_IWOTH)
+    others_execute = bool(file_stat.st_mode & stat.S_IXOTH)
+
+    assert owner_read and owner_write and owner_execute
+    assert group_read and not group_write and group_execute
+    assert others_read and not others_write and others_execute
+    
 
 @pytest.fixture
 def get_cgi(my_ip):

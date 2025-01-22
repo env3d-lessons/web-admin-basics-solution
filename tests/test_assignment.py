@@ -2,7 +2,18 @@ import os
 import stat
 import pathlib
 import pytest
+import json
+import urllib
+import urllib.request
 
+@pytest.fixture(scope="session", autouse=True)
+def global_setup():
+    print("\nSetting up resources before any tests")
+    if 'ubuntu' in os.popen('whoami').read():
+        os.popen('rm *.txt').read()
+    yield
+    print("\nTearing down resources after all tests")
+    # Perform teardown tasks here
 
 @pytest.fixture(scope="session")
 def my_ip():
@@ -17,7 +28,6 @@ def my_ip():
 def content_test_sh():
     if not pathlib.Path('test.sh').is_file():
         os.popen('cp /usr/lib/cgi-bin/test.sh .').read()
-
     try:
         return open('test.sh').read()
     except:

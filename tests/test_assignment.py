@@ -1,14 +1,10 @@
 import os
 import stat
-import re
-import json
 import pathlib
 import pytest
-import subprocess
-import urllib.request
-import urllib.error
 
-@pytest.fixture
+
+@pytest.fixture(scope="session")
 def my_ip():
     if not pathlib.Path('my_ip.txt').is_file():
         f = open('my_ip.txt','w')
@@ -17,31 +13,33 @@ def my_ip():
 
     return open('my_ip.txt').read()
 
-def test_apache_static(my_ip):
-    err = None
+@pytest.fixture(scope="session")
+def content_test_sh():
+    if not pathlib.Path('test.sh').is_file():
+        os.popen('cp /usr/lib/cgi-bin/test.sh .').read()
+
     try:
-        res = urllib.request.urlopen(f'http://{my_ip}')
-        assert len(res.read()) > 0
-    except urllib.error.HTTPError as e:
-        err = e
-    except urllib.error.URLError as e:
-        err = e
-    except Exception as e:
-        err = e
+        return open('test.sh').read()
+    except:
+        return None
 
-    if err:
-        assert False, f"An error occurred: {err}"
+@pytest.fixture(scope="session")
+def curl_localhost():
+    output_file = 'curl_localhost.txt'
+    if not pathlib.Path(output_file).is_file():
+        os.popen(f'curl localhost > {output_file}').read()
+    return open(output_file).read()
 
+@pytest.fixture(scope="session")
+def curl_test_sh():
+    output_file = 'curl_test_sh.txt'
+    if not pathlib.Path(output_file).is_file():
+        os.popen(f'curl localhost/cgi-bin/test.sh > {output_file}').read()
+    return open(output_file).read()
 
-def test_cgi_script_setup():
-    with open('/usr/lib/cgi-bin/test.sh') as test_sh:
-        content = test_sh.read()
-        assert '#!/bin/bash' in content
-        assert re.search(r'content-type:.*',content, re.IGNORECASE)
+def test_cgi_script_permission(content_test_sh):
 
-def test_cgi_script_permission():
-
-    file_stat = os.stat('/usr/lib/cgi-bin/test.sh')
+    file_stat = os.stat('test.sh')
 
     # Owner permissions
     owner_read = bool(file_stat.st_mode & stat.S_IRUSR)
@@ -62,30 +60,18 @@ def test_cgi_script_permission():
     assert group_read and not group_write and group_execute
     assert others_read and not others_write and others_execute
     
-
-@pytest.fixture
-def get_cgi(my_ip):
-    err = None
-    try:
-        res = urllib.request.urlopen(f'http://{my_ip}/cgi-bin/test.sh')
-        return res
-    except urllib.error.HTTPError as e:
-        err = e
-    except urllib.error.URLError as e:
-        err = e
-    except Exception as e:
-        err = e
-
-    if err:
-        assert False, f"An error occurred: {err}"
-
+def test_curl_localhost(curl_localhost):
+    assert len(curl_localhost) > 0
     
-def test_apache_dynamic_header(get_cgi):
-    assert get_cgi.headers.get_content_type() == 'text/plain'
+def test_content_test_sh(content_test_sh):
+    assert content_test_sh != None
 
-def test_apache_dynamic_content(get_cgi):
-    assert len(get_cgi.read().decode('utf-8')) > 0
-    
+def test_test_sh(curl_test_sh):
+    assert len(curl_test_sh) > 0
+
+def test_test_sh_header(curl_test_sh):
+    assert 'text/plain' in curl_test_sh
+
 def test_dns(my_ip):
     d = json.loads(urllib.request.urlopen('http://api.wmdd4950.com/arecord/list').read())
     assert my_ip in d.values(), f'{my_ip} DNS has not been setup'

@@ -52,10 +52,10 @@ def test_curl_localhost(curl_localhost):
     
 def test_content_test_sh(content_test_sh):
     assert content_test_sh != None
-    assert '200' in content_test_sh
 
 def test_test_sh(curl_test_sh):
     assert len(curl_test_sh) > 0
+    assert '200' in content_test_sh
 
 def test_test_sh_header(curl_test_sh):
     assert 'text/plain' in curl_test_sh

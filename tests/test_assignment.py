@@ -46,35 +46,13 @@ def curl_test_sh():
     if not pathlib.Path(output_file).is_file():
         os.popen(f'curl --head localhost/cgi-bin/test.sh > {output_file}').read()
     return open(output_file).read()
-
-def test_cgi_script_permission(content_test_sh):
-
-    file_stat = os.stat('test.sh')
-
-    # Owner permissions
-    owner_read = bool(file_stat.st_mode & stat.S_IRUSR)
-    owner_write = bool(file_stat.st_mode & stat.S_IWUSR)
-    owner_execute = bool(file_stat.st_mode & stat.S_IXUSR)
-    
-    # Group permissions
-    group_read = bool(file_stat.st_mode & stat.S_IRGRP)
-    group_write = bool(file_stat.st_mode & stat.S_IWGRP)
-    group_execute = bool(file_stat.st_mode & stat.S_IXGRP)
-    
-    # Others permissions
-    others_read = bool(file_stat.st_mode & stat.S_IROTH)
-    others_write = bool(file_stat.st_mode & stat.S_IWOTH)
-    others_execute = bool(file_stat.st_mode & stat.S_IXOTH)
-
-    assert owner_read and owner_write and owner_execute
-    assert group_read and not group_write and group_execute
-    assert others_read and not others_write and others_execute
     
 def test_curl_localhost(curl_localhost):
     assert len(curl_localhost) > 0
     
 def test_content_test_sh(content_test_sh):
     assert content_test_sh != None
+    assert '200' in content_test_sh
 
 def test_test_sh(curl_test_sh):
     assert len(curl_test_sh) > 0

@@ -44,7 +44,7 @@ def curl_localhost():
 def curl_test_sh():
     output_file = 'curl_test_sh.txt'
     if not pathlib.Path(output_file).is_file():
-        os.popen(f'curl localhost/cgi-bin/test.sh > {output_file}').read()
+        os.popen(f'curl --head localhost/cgi-bin/test.sh > {output_file}').read()
     return open(output_file).read()
 
 def test_cgi_script_permission(content_test_sh):
